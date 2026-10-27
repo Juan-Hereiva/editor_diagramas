@@ -1,0 +1,21 @@
+{
+  "name": "Diagramas eléctricos",
+  "short_name": "Diagramas",
+  "description": "Editor de esquemas eléctricos con simulador de Arduino, ESP32 y Raspberry Pi Pico",
+  "lang": "es",
+  "start_url": "/",
+  "scope": "/",
+  "display": "standalone",
+  "orientation": "any",
+  "background_color": "#f2f3f5",
+  "theme_color": "#ffffff",
+  "icons": [
+    { "src": "/static/icons/icon-192.png", "sizes": "192x192", "type": "image/png" },
+    { "src": "/static/icons/icon-512.png", "sizes": "512x512", "type": "image/png" },
+    { "src": "/static/icons/icon-maskable-512.png", "sizes": "512x512", "type": "image/png", "purpose": "maskable" }
+  ],
+  "shortcuts": [
+    { "name": "Mis diagramas", "url": "/" },
+    { "name": "Biblioteca de componentes", "url": "/componentes" }
+  ]
+}

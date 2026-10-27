@@ -1,0 +1,149 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>Diagramas eléctricos</title>
+<link rel="manifest" href="/manifest.webmanifest">
+<meta name="theme-color" content="#ffffff" media="(prefers-color-scheme: light)">
+<meta name="theme-color" content="#000000" media="(prefers-color-scheme: dark)">
+<script>(function(){try{var t=localStorage.getItem('editor-diagramas:tema');if(t==='dark'||t==='light')document.documentElement.dataset.theme=t}catch(e){}})()</script>
+<meta name="mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+<meta name="apple-mobile-web-app-title" content="Diagramas">
+<link rel="apple-touch-icon" href="/static/icons/icon-180.png">
+<link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24'><path fill='%233b6182' d='M13 2 4 14h6l-1 8 9-12h-6z'/></svg>">
+<link rel="stylesheet" href="/static/css/app.css">
+<link rel="stylesheet" href="/static/css/responsive.css">
+</head>
+<body>
+<header class="topbar">
+  <a class="logo" href="/">
+    <svg viewBox="0 0 24 24"><path fill="#fbbf24" d="M13 2 4 14h6l-1 8 9-12h-6z"/></svg>
+    Diagramas eléctricos
+  </a>
+  <span class="spacer"></span>
+  <a class="btn" href="/componentes" data-o="1">Biblioteca de componentes</a>
+  <button class="btn theme-btn" type="button" data-o="2"><span>Modo oscuro</span></button>
+</header>
+
+<main class="page">
+  <div class="page-head">
+    <div class="grow">
+      <h1>Mis diagramas</h1>
+      <p>Arrastra componentes, une bornes y los cables se trazan solos en ángulo recto.</p>
+    </div>
+    <input class="search" id="q" type="search" placeholder="Buscar diagrama…">
+    <button class="btn" id="btn-backup">Exportar respaldo</button>
+    <button class="btn" id="btn-restore">Importar respaldo</button>
+    <input type="file" id="file-restore" accept=".json,application/json" hidden>
+    <a class="btn" href="/simulador?ejemplos=1" title="Circuitos de Arduino, Pico y ESP32 listos para simular">Ejemplos del simulador</a>
+    <button class="btn btn-primary" id="btn-new">+ Nuevo diagrama</button>
+  </div>
+  <div id="list"></div>
+</main>
+
+<script src="/static/js/responsive.js"></script>
+<script src="/static/js/common.js"></script>
+<script>
+(function () {
+  'use strict';
+  const { api, esc, toast, fmtDate } = App;
+  const list = document.getElementById('list');
+  let diagrams = [];
+
+  async function load() {
+    list.innerHTML = '<div class="empty-state" role="status"><p>Cargando diagramas…</p></div>';
+    try {
+      diagrams = await api.listDiagrams();
+      render();
+    } catch (e) {
+      list.innerHTML = '<div class="empty-state" role="alert"><h2>No se pudo conectar con el servidor</h2><p>' + esc(e.message) + '</p>' +
+        '<p>Comprueba que el servidor esté en marcha (iniciar.bat o el contenedor de Docker) y vuelve a intentarlo.</p>' +
+        '<button class="btn btn-primary" data-act="retry">Reintentar</button></div>';
+    }
+  }
+
+  function render() {
+    const q = document.getElementById('q').value.trim().toLowerCase();
+    const items = diagrams.filter((d) => !q || d.name.toLowerCase().includes(q));
+    if (!diagrams.length) {
+      list.innerHTML = '<div class="empty-state"><h2>Todavía no hay diagramas</h2>' +
+        '<p>Crea el primero con el botón <b>+ Nuevo diagrama</b>.</p></div>';
+      return;
+    }
+    if (!items.length) {
+      list.innerHTML = '<div class="empty-state"><p>Ningún diagrama coincide con la búsqueda.</p></div>';
+      return;
+    }
+    list.innerHTML = '<div class="cards">' + items.map((d) => `
+      <div class="card" data-id="${d.id}">
+        <div class="thumb" data-act="open">${d.thumbnail
+          ? `<img src="${esc(d.thumbnail)}" alt="">` : '<span class="empty">Sin vista previa</span>'}</div>
+        <div class="meta"><h3>${esc(d.name)}</h3><small>Editado ${esc(fmtDate(d.updated_at))}</small></div>
+        <div class="actions">
+          <button class="btn btn-sm btn-primary" data-act="open">Abrir</button>
+          <button class="btn btn-sm" data-act="sim" title="Abrir en el simulador: Arduino, Pico, ESP32, Orange Pi o Raspberry Pi">Simular</button>
+          <button class="btn btn-sm" data-act="rename">Renombrar</button>
+          <button class="btn btn-sm" data-act="dup">Duplicar</button>
+          <button class="btn btn-sm btn-danger" data-act="del">Eliminar</button>
+        </div>
+      </div>`).join('') + '</div>';
+  }
+
+  list.addEventListener('click', async (ev) => {
+    const btn = ev.target.closest('[data-act]');
+    if (!btn) return;
+    if (btn.dataset.act === 'retry') { load(); return; }
+    const card = btn.closest('.card');
+    const id = Number(card.dataset.id);
+    const d = diagrams.find((x) => x.id === id);
+    const act = btn.dataset.act;
+    try {
+      if (act === 'open') location.href = '/editor?id=' + id;
+      if (act === 'sim') location.href = '/simulador?id=' + id;
+      if (act === 'rename') {
+        const name = prompt('Nuevo nombre del diagrama:', d.name);
+        if (name && name.trim()) { await api.updateDiagram(id, { name: name.trim() }); await load(); }
+      }
+      if (act === 'dup') { await api.duplicateDiagram(id); toast('Diagrama duplicado', 'ok'); await load(); }
+      if (act === 'del') {
+        if (confirm('¿Eliminar "' + d.name + '"? Esta acción no se puede deshacer.')) {
+          await api.deleteDiagram(id); toast('Diagrama eliminado'); await load();
+        }
+      }
+    } catch (e) { toast(e.message, 'error'); }
+  });
+
+  document.getElementById('q').addEventListener('input', render);
+
+  document.getElementById('btn-new').addEventListener('click', async () => {
+    const name = prompt('Nombre del nuevo diagrama:', 'Nuevo diagrama');
+    if (name === null) return;
+    try {
+      const d = await api.createDiagram({ name: name.trim() || 'Diagrama sin nombre', data: {} });
+      location.href = '/editor?id=' + d.id;
+    } catch (e) { toast(e.message, 'error'); }
+  });
+
+  document.getElementById('btn-backup').addEventListener('click', () => { location.href = '/api/backup'; });
+  document.getElementById('btn-restore').addEventListener('click', () => document.getElementById('file-restore').click());
+
+  document.getElementById('file-restore').addEventListener('change', async (ev) => {
+    const file = ev.target.files[0];
+    ev.target.value = '';
+    if (!file) return;
+    try {
+      const json = JSON.parse(await file.text());
+      const r = await api.importBackup(json);
+      toast('Importados ' + r.diagrams + ' diagramas y ' + r.components + ' componentes', 'ok');
+      await load();
+    } catch (e) { toast('No se pudo importar: ' + e.message, 'error'); }
+  });
+
+  load();
+})();
+</script>
+</body>
+</html>

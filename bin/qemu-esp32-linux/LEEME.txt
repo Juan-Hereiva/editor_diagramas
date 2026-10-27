@@ -1,0 +1,9 @@
+Emulador del ESP32 para Linux (lo usa la imagen Docker)
+=======================================================
+
+libqemu-xtensa.so (ESP32), libqemu-riscv32.so (ESP32-C3) y fw/ (ROM) vienen del AppImage oficial de
+PICSimLab 0.9.3 para Ubuntu 22.04 (https://github.com/lcgamboa/picsimlab/releases), carpeta
+usr/lib/picsimlab/qemu. Licencia GNU GPL v2. Código fuente:
+https://github.com/lcgamboa/qemu/tree/picsimlab-esp32
+
+Necesitan los paquetes libgcrypt20 y libfdt1 (los instala el Dockerfile).

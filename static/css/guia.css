@@ -1,0 +1,38 @@
+/* Guía de puesta en marcha */
+.guia-body { background: var(--bg); }
+.sim-title { display: flex; flex-direction: column; line-height: 1.1; }
+.sim-title b { font-size: 15px; }
+.sim-title small { font-size: 11px; color: var(--muted); }
+.g-board { display: flex; align-items: center; gap: 6px; font-size: 13px; color: var(--ink); }
+.g-board select { height: 32px; border-radius: 8px; border: 1px solid var(--field-line); background: var(--panel); color: var(--ink); padding: 0 6px; }
+.guia { max-width: 920px; margin: 0 auto; padding: 24px 16px 60px; }
+.g-intro h1 { margin: 0 0 6px; font-size: 26px; }
+.g-intro p { margin: 0 0 18px; color: var(--ink-2); }
+.g-warn { background: var(--danger-soft); border: 1px solid var(--danger); color: var(--danger-ink); border-radius: 10px; padding: 12px 14px; margin-bottom: 16px; }
+.g-sec { background: var(--panel); border: 1px solid var(--line); border-radius: 10px; padding: 16px 18px; margin-bottom: 14px; }
+.g-sec h2 { margin: 0 0 10px; font-size: 18px; display: flex; align-items: center; gap: 10px; }
+/* número del paso: es el orden real de montaje */
+.g-n { display: inline-grid; place-items: center; width: 26px; height: 26px; border-radius: 6px; background: var(--side); border: 1px solid var(--line-2); color: var(--ink-2); font-size: 13px; font-weight: 600; flex-shrink: 0; }
+.g-sec ol, .g-sec ul { padding-left: 22px; margin: 6px 0; }
+.g-sec li { margin-bottom: 7px; line-height: 1.5; }
+.g-sec code { background: var(--side); border: 1px solid var(--line); border-radius: 5px; padding: 0 5px; font-size: 12.5px; }
+.g-sec .table { width: 100%; border-collapse: collapse; font-size: 13.5px; }
+.g-sec .table th, .g-sec .table td { text-align: left; padding: 6px 8px; border-bottom: 1px solid var(--line); }
+.g-sec .table th { color: var(--muted); font-weight: 600; font-size: 12.5px; }
+pre.code, .g-code pre { background: var(--code-bg); color: #e2e5e9; border: 1px solid var(--code-line); border-radius: 8px; padding: 10px 12px; overflow: auto; font: 12.5px/1.45 Consolas, "Cascadia Mono", monospace; margin: 6px 0; white-space: pre; }
+.g-code { margin: 8px 0; }
+.g-code-h { display: flex; justify-content: space-between; align-items: center; font-size: 12px; color: var(--muted); }
+.g-code pre { max-height: 460px; }
+.g-sec details summary { cursor: pointer; color: var(--brand-2); margin: 6px 0; }
+.g-foot { text-align: center; margin-top: 20px; }
+
+@media print {
+  .topbar, [data-copy] { display: none !important; }
+  .guia-body { background: #fff; color: #000; }
+  .guia { max-width: none; padding: 0; }
+  .g-sec { break-inside: avoid-page; background: #fff; border-color: #ccc; }
+  .g-code pre, pre.code { max-height: none; white-space: pre-wrap; background: #f7f8f9; color: #1f2328; border: 1px solid #c8cdd3; }
+}
+.g-check { background: var(--notice-bg); border: 1px solid var(--notice-line); color: var(--notice-ink); border-radius: 8px; padding: 10px 14px; margin-top: 10px; }
+.g-check ul { margin: 6px 0 0; }
+.g-ok { color: var(--ok-text); font-weight: 600; }

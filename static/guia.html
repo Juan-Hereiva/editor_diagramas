@@ -1,0 +1,55 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>Guía de puesta en marcha · Diagramas eléctricos</title>
+<link rel="manifest" href="/manifest.webmanifest">
+<meta name="theme-color" content="#ffffff" media="(prefers-color-scheme: light)">
+<meta name="theme-color" content="#000000" media="(prefers-color-scheme: dark)">
+<script>(function(){try{var t=localStorage.getItem('editor-diagramas:tema');if(t==='dark'||t==='light')document.documentElement.dataset.theme=t}catch(e){}})()</script>
+<meta name="mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+<meta name="apple-mobile-web-app-title" content="Diagramas">
+<link rel="apple-touch-icon" href="/static/icons/icon-180.png">
+<link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24'><path fill='%233b6182' d='M13 2 4 14h6l-1 8 9-12h-6z'/></svg>">
+<link rel="stylesheet" href="/static/css/app.css">
+<link rel="stylesheet" href="/static/css/guia.css">
+<link rel="stylesheet" href="/static/css/responsive.css">
+</head>
+<body class="guia-body">
+
+<header class="topbar">
+  <a class="logo" href="/" title="Volver a mis diagramas"><svg viewBox="0 0 24 24"><path fill="#fbbf24" d="M13 2 4 14h6l-1 8 9-12h-6z"/></svg></a>
+  <span class="sim-title"><b id="g-name">Guía de puesta en marcha</b><small>Del diagrama al montaje real</small></span>
+  <span class="spacer"></span>
+  <label class="g-board" data-o="2">Placa
+    <select id="g-board">
+      <option value="auto">Detectar en el diagrama</option>
+      <optgroup label="Microcontroladores (Arduino IDE)">
+        <option value="uno">Arduino Uno</option><option value="nano">Arduino Nano</option><option value="mega">Arduino Mega 2560</option>
+        <option value="esp32">ESP32 DevKit</option><option value="esp32c3">ESP32-C3</option><option value="pico">Raspberry Pi Pico</option>
+      </optgroup>
+      <optgroup label="Ordenadores con Linux">
+        <option value="rpi">Raspberry Pi 4 / 5 / Zero 2 W</option><option value="opi">Orange Pi</option>
+      </optgroup>
+      <optgroup label="Industrial">
+        <option value="plc">Raspberry PLC (Industrial Shields)</option>
+      </optgroup>
+    </select>
+  </label>
+  <a class="btn" id="g-editor" data-o="4" href="#"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M4 20h4L19 9a2.8 2.8 0 0 0-4-4L4 16z"/><path d="M13.5 6.5l4 4"/></svg><span>Editor</span></a>
+  <a class="btn" id="g-sim" data-o="3" href="#"><svg viewBox="0 0 24 24" fill="currentColor" aria-hidden="true"><path d="M7 4.5v15a1 1 0 0 0 1.5.86l12.5-7.5a1 1 0 0 0 0-1.72L8.5 3.64A1 1 0 0 0 7 4.5z"/></svg><span>Simulador</span></a>
+  <button class="btn theme-btn" type="button" data-o="6"><span>Modo oscuro</span></button>
+  <button class="btn" id="g-print" data-o="5" title="Imprimir o guardar como PDF"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M6 9V3h12v6M6 18H4a1 1 0 0 1-1-1v-6a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2v6a1 1 0 0 1-1 1h-2"/><rect x="6" y="14" width="12" height="7"/></svg><span>Imprimir</span></button>
+</header>
+
+<main class="guia" id="guia"><p class="help">Cargando…</p></main>
+
+<script src="/static/js/common.js"></script>
+<script src="/static/js/guia-datos.js"></script>
+<script src="/static/js/responsive.js"></script>
+<script src="/static/js/guia.js"></script>
+</body>
+</html>

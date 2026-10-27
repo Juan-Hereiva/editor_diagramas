@@ -1,0 +1,152 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>Simulador · Diagramas eléctricos</title>
+<link rel="manifest" href="/manifest.webmanifest">
+<meta name="theme-color" content="#ffffff" media="(prefers-color-scheme: light)">
+<meta name="theme-color" content="#000000" media="(prefers-color-scheme: dark)">
+<script>(function(){try{var t=localStorage.getItem('editor-diagramas:tema');if(t==='dark'||t==='light')document.documentElement.dataset.theme=t}catch(e){}})()</script>
+<meta name="mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+<meta name="apple-mobile-web-app-title" content="Diagramas">
+<link rel="apple-touch-icon" href="/static/icons/icon-180.png">
+<link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24'><path fill='%233b6182' d='M13 2 4 14h6l-1 8 9-12h-6z'/></svg>">
+<link rel="stylesheet" href="/static/css/app.css">
+<link rel="stylesheet" href="/static/vendor/codemirror/codemirror.css">
+<link rel="stylesheet" href="/static/vendor/codemirror/material-darker.css">
+<link rel="stylesheet" href="/static/css/sim.css">
+<link rel="stylesheet" href="/static/css/responsive.css">
+</head>
+<body class="editor-body sim-body">
+
+<header class="topbar">
+  <a class="logo" href="/" title="Volver a mis diagramas"><svg viewBox="0 0 24 24"><path fill="#fbbf24" d="M13 2 4 14h6l-1 8 9-12h-6z"/></svg></a>
+  <span class="sim-title"><b id="sim-name">Simulador</b><small>Arduino · Pico · ESP32 · Orange Pi / Raspberry Pi (Python)</small></span>
+  <a class="btn" id="btn-editor" data-o="7" href="#" title="Abrir este diagrama en el editor"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M4 20h4L19 9a2.8 2.8 0 0 0-4-4L4 16z"/><path d="M13.5 6.5l4 4"/></svg><span>Editar diagrama</span></a>
+  <a class="btn" id="btn-guia" data-o="8" href="#" title="Cómo montarlo de verdad: IDE o sistema operativo, librerías y programa"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M4 4.5A2.5 2.5 0 0 1 6.5 2H20v17H6.5A2.5 2.5 0 0 0 4 21.5z"/><path d="M4 19.5A2.5 2.5 0 0 1 6.5 17H20"/></svg><span>Guía</span></a>
+  <span class="spacer"></span>
+  <label class="sim-board" data-o="3">Placa
+    <select id="board"><option value="uno">Arduino Uno</option><option value="nano">Arduino Nano</option><option value="mega">Arduino Mega 2560</option><option value="pico">Raspberry Pi Pico</option><option value="esp32">ESP32 DevKit</option><option value="esp32c3">ESP32-C3 DevKitM</option><optgroup label="Linux · Python"><option value="opi">Orange Pi (Python)</option><option value="rpi">Raspberry Pi (Python)</option></optgroup></select>
+  </label>
+  <button class="btn" id="btn-examples" data-o="9" title="Abrir un circuito de ejemplo ya montado y con su programa"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M3 7a2 2 0 0 1 2-2h4l2 2h8a2 2 0 0 1 2 2v8a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z"/></svg><span>Ejemplos</span></button>
+  <button class="btn" id="btn-libs" data-o="10" title="Buscar e instalar librerías de Arduino"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 8l-9-5-9 5 9 5 9-5z"/><path d="M3 8v8l9 5 9-5V8"/><path d="M12 13v8"/></svg><span>Librerías</span></button>
+  <button class="btn sim-run" id="btn-run" title="Compilar y ejecutar (Ctrl+Enter)"><svg viewBox="0 0 24 24" fill="currentColor" aria-hidden="true"><path d="M7 4.5v15a1 1 0 0 0 1.5.86l12.5-7.5a1 1 0 0 0 0-1.72L8.5 3.64A1 1 0 0 0 7 4.5z"/></svg><span>Simular</span></button>
+  <button class="btn" id="btn-pause" data-o="4" disabled title="Pausar / continuar (espacio fuera del código)"><svg viewBox="0 0 24 24" fill="currentColor" aria-hidden="true"><rect x="6" y="4" width="4" height="16" rx="1"/><rect x="14" y="4" width="4" height="16" rx="1"/></svg><span>Pausa</span></button>
+  <button class="btn" id="btn-stop" disabled title="Detener">■ Detener</button>
+  <button class="btn" id="btn-reset" data-o="5" disabled title="Reiniciar la placa">↺ Reiniciar</button>
+  <span class="sim-state" id="sim-state" data-o="6">Detenido</span>
+  <button class="btn theme-btn" type="button" data-o="11"><span>Modo oscuro</span></button>
+</header>
+
+<nav class="sim-mtabs" id="sim-mtabs" aria-label="Vista">
+  <button class="on" data-v="code">Código</button><button data-v="stage">Circuito</button><button data-v="ctrl">Controles</button>
+</nav>
+
+<div class="sim-main">
+  <section class="sim-code">
+    <div class="sim-tabs"><span class="on" id="code-file">sketch.ino</span><span class="sp"></span><button class="lb" id="btn-save-code" title="Guardar el código (Ctrl+S)">Guardar</button></div>
+    <textarea id="code"></textarea>
+    <div class="sim-bottom">
+      <div class="sim-tabs">
+        <button class="tab on" data-pane="serial">Monitor serie</button>
+        <button class="tab" data-pane="out">Compilación</button>
+        <button class="tab" data-pane="scope">Analizador lógico</button>
+        <span class="sp"></span>
+        <button class="lb" id="btn-clear" title="Borrar el monitor" aria-label="Borrar el monitor"><svg viewBox="0 0 24 24" width="14" height="14" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M4 7h16M10 11v6M14 11v6M6 7l1 13h10l1-13M9 7V4h6v3"/></svg></button>
+      </div>
+      <pre class="pane on" id="pane-serial"></pre>
+      <pre class="pane" id="pane-out"></pre>
+      <div class="pane scope" id="pane-scope">
+        <div class="scope-bar">
+          <label>Ventana <select id="scope-win">
+            <option value="1000">1 ms</option><option value="5000">5 ms</option><option value="20000" selected>20 ms</option>
+            <option value="100000">100 ms</option><option value="500000">0,5 s</option><option value="2000000">2 s</option><option value="10000000">10 s</option>
+          </select></label>
+          <button class="lb" id="scope-freeze">Congelar</button>
+          <details class="scope-pick" id="scope-pick"><summary>Canales (<span id="scope-n">0</span>)</summary><div class="scope-ch" id="scope-ch"></div></details>
+          <span class="scope-help">Muestra los cambios de nivel de los pines del micro. El I2C y el SPI por hardware no se ven pin a pin.</span>
+        </div>
+        <div class="scope-wrap"><canvas id="scope-cv"></canvas></div>
+      </div>
+      <div class="serial-in" id="serial-in-row">
+        <input id="serial-in" placeholder="Escribe y pulsa Enter para enviarlo al Arduino (Serial.read)">
+      </div>
+    </div>
+  </section>
+
+  <section class="sim-stage">
+    <div id="sim-paper"></div>
+    <div class="sim-edit">
+      <div class="edit-bar" id="edit-bar" hidden>
+        <details class="ed-pick" id="ed-pick"><summary class="btn btn-sm btn-primary">+ Añadir pieza</summary>
+          <div class="ed-panel"><input id="ed-q" class="search" placeholder="Buscar: LED, servo, relé, LCD…"><div class="ed-res" id="ed-res"></div></div>
+        </details>
+        <label class="ed-type" title="Color del cable nuevo (o del cable elegido)">Cable <select id="ed-type"></select></label>
+        <button class="btn btn-sm" id="ed-rot" disabled title="Girar 90° (R)">⟳ Girar</button>
+        <button class="btn btn-sm btn-danger" id="ed-del" disabled title="Borrar lo elegido (Supr)">Borrar</button>
+        <span class="ed-state" id="ed-state">Arrastra piezas · tira cables de borne a borne</span>
+      </div>
+      <button class="btn btn-sm" id="btn-ctrl" title="Potenciómetros, sensores e interruptores"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M4 6h10M18 6h2M4 12h4M12 12h8M4 18h12"/><circle cx="16" cy="6" r="2"/><circle cx="10" cy="12" r="2"/><circle cx="18" cy="18" r="2"/></svg><span>Controles</span></button>
+      <button class="btn btn-sm" id="btn-edit" title="Mover piezas, cablear y añadir piezas sin salir del simulador"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M4 20h4L19 9a2.8 2.8 0 0 0-4-4L4 16z"/><path d="M13.5 6.5l4 4"/></svg><span>Editar circuito</span></button>
+    </div>
+    <div class="sim-zoom">
+      <button class="tool-btn" id="z-out">−</button><button class="tool-btn" id="z-fit">Ajustar</button><button class="tool-btn" id="z-in">+</button>
+    </div>
+    <div class="sim-hint" id="sim-hint"></div>
+  </section>
+
+  <aside class="sim-ctrl">
+    <h2>Controles</h2>
+    <p class="help">Pulsa los botones en el plano con el ratón. Aquí ajustas potenciómetros, sensores e interruptores.</p>
+    <div id="controls"></div>
+    <h2 style="margin-top:14px">Rendimiento</h2>
+    <div class="perf"><span id="perf-speed">-</span><small>velocidad respecto al tiempo real</small></div>
+    <div class="perf"><span id="perf-time">0,0 s</span><small>tiempo simulado</small></div>
+  </aside>
+</div>
+
+<div class="modal-back" id="modal-examples">
+  <div class="modal">
+    <header><h2>Ejemplos</h2><button class="btn btn-sm" id="examples-close">Cerrar</button></header>
+    <div class="modal-body">
+      <p class="help">Cada ejemplo crea un diagrama nuevo con las piezas cableadas y su programa, y lo pone en marcha. Tus diagramas no se tocan.</p>
+      <div class="ex-grid" id="ex-grid"></div>
+    </div>
+  </div>
+</div>
+
+<div class="modal-back" id="modal-libs">
+  <div class="modal">
+    <header><h2>Librerías de Arduino</h2><button class="btn btn-sm" id="libs-close">Cerrar</button></header>
+    <div class="modal-body">
+      <div class="row lib-search"><input id="lib-q" class="search" placeholder="Buscar librería (p. ej. LiquidCrystal I2C, Adafruit SSD1306, DHT)"><button class="btn btn-primary" id="lib-go">Buscar</button></div>
+      <div id="lib-res"></div>
+      <h3 class="mh" style="margin-top:16px">Instaladas</h3>
+      <div id="lib-inst" class="help">…</div>
+    </div>
+  </div>
+</div>
+
+<script src="/static/vendor/joint.min.js"></script>
+<script src="/static/vendor/avr8js.min.js"></script>
+<script src="/static/vendor/rp2040js.min.js"></script>
+<script src="/static/vendor/rp2040-bootrom.js"></script>
+<script src="/static/vendor/codemirror/codemirror.js"></script>
+<script src="/static/vendor/codemirror/clike.js"></script>
+<script src="/static/vendor/codemirror/python.js"></script>
+<script src="/static/vendor/codemirror/matchbrackets.js"></script>
+<script src="/static/vendor/codemirror/closebrackets.js"></script>
+<script src="/static/js/common.js"></script>
+<script src="/static/js/shapes.js"></script>
+<script src="/static/js/ejemplos.js"></script>
+<script src="/static/js/guia-datos.js"></script>
+<script src="/static/js/guia.js"></script>
+<script src="/static/js/fichas.js"></script>
+<script src="/static/js/sim-engines.js"></script>
+<script src="/static/js/responsive.js"></script>
+<script src="/static/js/sim.js"></script>
+</body>
+</html>

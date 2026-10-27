@@ -1,0 +1,18 @@
+services:
+  diagramas:
+    build: .
+    ports:
+      - "8000:8000"
+    volumes:
+      - datos:/data
+      - arduino:/opt/arduino     # núcleos y librerías del simulador
+    environment:
+      # Descomenta para proteger la app con usuario y contraseña:
+      # APP_USER: admin
+      # APP_PASSWORD: cambia-esta-clave
+      DATABASE_PATH: /data/diagramas.db
+    restart: unless-stopped
+
+volumes:
+  datos:
+  arduino:

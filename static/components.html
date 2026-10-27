@@ -1,0 +1,84 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>Biblioteca de componentes · Diagramas eléctricos</title>
+<link rel="manifest" href="/manifest.webmanifest">
+<meta name="theme-color" content="#ffffff" media="(prefers-color-scheme: light)">
+<meta name="theme-color" content="#000000" media="(prefers-color-scheme: dark)">
+<script>(function(){try{var t=localStorage.getItem('editor-diagramas:tema');if(t==='dark'||t==='light')document.documentElement.dataset.theme=t}catch(e){}})()</script>
+<meta name="mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+<meta name="apple-mobile-web-app-title" content="Diagramas">
+<link rel="apple-touch-icon" href="/static/icons/icon-180.png">
+<link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24'><path fill='%233b6182' d='M13 2 4 14h6l-1 8 9-12h-6z'/></svg>">
+<link rel="stylesheet" href="/static/css/app.css">
+<link rel="stylesheet" href="/static/css/responsive.css">
+</head>
+<body class="editor-body">
+<header class="topbar">
+  <a class="logo" href="/">
+    <svg viewBox="0 0 24 24"><path fill="#fbbf24" d="M13 2 4 14h6l-1 8 9-12h-6z"/></svg>
+    Biblioteca de componentes
+  </a>
+  <span class="save-state" id="state" data-o="2"></span>
+  <span class="spacer"></span>
+  <a class="btn" href="/" data-o="1">Mis diagramas</a>
+  <button class="btn theme-btn" type="button" data-o="3"><span>Modo oscuro</span></button>
+</header>
+
+<div class="designer">
+  <aside class="sidebar">
+    <div class="sidebar-head">
+      <h2>Componentes</h2>
+      <input class="search" id="search" type="search" placeholder="Buscar…">
+    </div>
+    <div class="sidebar-scroll" id="list"></div>
+    <div class="sidebar-foot"><button class="btn btn-primary btn-sm" id="btn-new" style="width:100%">＋ Nuevo componente</button></div>
+  </aside>
+
+  <section class="stage-wrap" id="stage-wrap">
+    <div class="stage" id="stage"></div>
+  </section>
+
+  <aside class="sidebar right">
+    <div class="sidebar-scroll props" id="form">
+      <h3 id="form-title">Nuevo componente</h3>
+      <p class="sub">Haz clic sobre la imagen para añadir un borne. Arrástralo para moverlo.</p>
+
+      <div class="field"><label>Nombre</label><input type="text" id="f-name" placeholder="Ej. Fuente Mean Well NDR-120-24"></div>
+      <div class="field"><label>Categoría</label><input type="text" id="f-cat" list="cats" placeholder="Ej. Alimentación DC"><datalist id="cats"></datalist></div>
+
+      <div class="field">
+        <label>Imagen del equipo (opcional)</label>
+        <div class="dropzone" id="drop">Arrastra una foto aquí, <b>haz clic</b> para elegirla<br>o pégala con <kbd>Ctrl</kbd>+<kbd>V</kbd></div>
+        <input type="file" id="f-file" accept="image/*" hidden>
+        <div class="props-actions" style="margin-top:6px"><button class="btn btn-sm" id="btn-noimg">Quitar imagen</button></div>
+      </div>
+
+      <div class="field"><label>Tamaño en el plano (ancho × alto)</label>
+        <div class="row"><input type="number" id="f-w" min="10" step="10"><input type="number" id="f-h" min="10" step="10"></div></div>
+      <label class="check"><input type="checkbox" id="f-ratio" checked> Mantener proporción</label>
+      <div class="field" id="color-field"><label>Color de fondo (sin imagen)</label>
+        <div class="row"><input type="color" id="f-color" value="#eef2f7"><span class="help">Se usa cuando no hay foto.</span></div></div>
+      <label class="check"><input type="checkbox" id="f-labels" checked> Mostrar nombres de bornes en el plano</label>
+
+      <div class="field"><label>Bornes (<span id="t-count">0</span>)</label><div id="terms"></div>
+        <p class="help" id="t-help">Todavía no hay bornes: haz clic sobre la imagen.</p></div>
+
+      <div class="props-actions">
+        <button class="btn btn-primary" id="btn-save">Guardar</button>
+        <button class="btn" id="btn-dup">Duplicar</button>
+        <button class="btn btn-danger" id="btn-del">Eliminar</button>
+      </div>
+    </div>
+  </aside>
+</div>
+
+<script src="/static/js/responsive.js"></script>
+<script src="/static/js/common.js"></script>
+<script src="/static/js/designer.js"></script>
+</body>
+</html>

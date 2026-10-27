@@ -1,0 +1,219 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>Editor · Diagramas eléctricos</title>
+<link rel="manifest" href="/manifest.webmanifest">
+<meta name="theme-color" content="#ffffff" media="(prefers-color-scheme: light)">
+<meta name="theme-color" content="#000000" media="(prefers-color-scheme: dark)">
+<script>(function(){try{var t=localStorage.getItem('editor-diagramas:tema');if(t==='dark'||t==='light')document.documentElement.dataset.theme=t}catch(e){}})()</script>
+<meta name="mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+<meta name="apple-mobile-web-app-title" content="Diagramas">
+<link rel="apple-touch-icon" href="/static/icons/icon-180.png">
+<link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24'><path fill='%233b6182' d='M13 2 4 14h6l-1 8 9-12h-6z'/></svg>">
+<link rel="stylesheet" href="/static/css/app.css">
+<link rel="stylesheet" href="/static/css/responsive.css">
+</head>
+<body class="editor-body">
+
+<header class="topbar">
+  <button class="icon-btn" id="tg-left" title="Mostrar / ocultar componentes (Alt+1)"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="4" width="18" height="16" rx="2"/><path d="M9 4v16"/></svg></button>
+  <a class="logo" href="/" title="Volver a mis diagramas">
+    <svg viewBox="0 0 24 24"><path fill="#fbbf24" d="M13 2 4 14h6l-1 8 9-12h-6z"/></svg>
+  </a>
+  <input class="name-input" id="diagram-name" type="text" value="" spellcheck="false" title="Nombre del diagrama">
+  <span class="save-state" id="save-state" data-o="12">Cargando…</span>
+  <span class="spacer"></span>
+  <div class="btn-group view-group" title="Paneles" data-o="4">
+    <button class="icon-btn" id="tg-tools" title="Mostrar / ocultar herramientas (Alt+2)"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="4" width="18" height="16" rx="2"/><path d="M3 9h18"/></svg></button>
+    <button class="icon-btn" id="tg-right" title="Mostrar / ocultar propiedades (Alt+3)"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="4" width="18" height="16" rx="2"/><path d="M15 4v16"/></svg></button>
+    <button class="icon-btn" id="tg-focus" title="Modo enfoque: solo el tablero (F)"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M4 9V4h5M20 9V4h-5M4 15v5h5M20 15v5h-5"/></svg></button>
+  </div>
+  <span class="topsep" data-o="11"></span>
+  <div class="btn-group" title="Deshacer / rehacer" data-o="2">
+    <button class="icon-btn" id="btn-undo" title="Deshacer (Ctrl+Z)" disabled>
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M9 14 4 9l5-5"/><path d="M4 9h10.5a5.5 5.5 0 0 1 0 11H11"/></svg></button>
+    <button class="icon-btn" id="btn-redo" title="Rehacer (Ctrl+Y)" disabled>
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="m15 14 5-5-5-5"/><path d="M20 9H9.5a5.5 5.5 0 0 0 0 11H13"/></svg></button>
+  </div>
+  <button class="btn" id="btn-conns" data-o="6" title="Lista de conexiones (desde → hasta)"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M8 6h13M8 12h13M8 18h13M3 6h.01M3 12h.01M3 18h.01"/></svg><span>Conexiones</span></button>
+  <button class="btn" id="btn-review" data-o="7" title="Revisar el diagrama: empalmes sueltos, cables duplicados, posibles cortocircuitos…"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M9 12l2 2 4-4"/><path d="M12 3l8 3v6c0 5-3.5 8-8 9-4.5-1-8-4-8-9V6z"/></svg><span>Revisar</span></button>
+  <button class="btn" id="btn-png" data-o="9" title="Exportar como imagen PNG"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 3v12M7 10l5 5 5-5M5 21h14"/></svg><span>PNG</span></button>
+  <button class="btn" id="btn-svg" data-o="10" title="Exportar como SVG (vectorial)"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 3v12M7 10l5 5 5-5M5 21h14"/></svg><span>SVG</span></button>
+  <button class="btn" id="btn-print" data-o="8" title="Imprimir o guardar como PDF"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M6 9V3h12v6M6 18H4a1 1 0 0 1-1-1v-6a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2v6a1 1 0 0 1-1 1h-2"/><rect x="6" y="14" width="12" height="7"/></svg><span>Imprimir</span></button>
+  <a class="btn" id="btn-guia" data-o="5" href="#" title="Pasos para montarlo de verdad: sistema operativo, librerías y programa con tus pines"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M4 4.5A2.5 2.5 0 0 1 6.5 2H20v17H6.5A2.5 2.5 0 0 0 4 21.5z"/><path d="M4 19.5A2.5 2.5 0 0 1 6.5 17H20"/></svg><span>Guía</span></a>
+  <button class="btn sim-open" id="btn-sim" title="Simular el circuito con su programa: Arduino, Pico y ESP32, o Python en Orange Pi y Raspberry Pi"><svg viewBox="0 0 24 24" fill="currentColor"><path d="M7 4.5v15a1 1 0 0 0 1.5.86l12.5-7.5a1 1 0 0 0 0-1.72L8.5 3.64A1 1 0 0 0 7 4.5z"/></svg><span>Simular</span></button>
+  <button class="icon-btn" id="btn-keys" data-o="13" title="Atajos de teclado (?)">?</button>
+  <button class="btn theme-btn" type="button" data-o="14"><span>Modo oscuro</span></button>
+  <button class="btn btn-primary tb-end" id="btn-save" title="Ctrl+S">Guardar</button>
+</header>
+
+<div class="toolbar">
+  <div class="tgroup" data-cap="Herramienta">
+  <button class="tool-btn on" id="tool-select" title="Seleccionar (V): arrastra sobre el fondo para seleccionar varias cosas y moverlas juntas (V)">
+    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="3" width="18" height="18" rx="1" stroke-dasharray="4 3"/><path d="m10 9 8 4-3.5 1L13 18z" fill="currentColor"/></svg></button>
+  <button class="tool-btn" id="tool-pan" title="Mano (H): arrastra el fondo para desplazar el plano. También: Espacio + arrastrar o botón central del ratón">
+    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M18 11V6a2 2 0 0 0-4 0v5M14 10V4a2 2 0 0 0-4 0v6M10 10.5V6a2 2 0 0 0-4 0v8"/><path d="M18 8a2 2 0 1 1 4 0v6a8 8 0 0 1-8 8h-2c-2.8 0-4.5-.86-5.99-2.34l-3.6-3.6a2 2 0 0 1 2.83-2.82L7 15"/></svg></button>
+  
+  </div>
+  <div class="tgroup" data-cap="Cable nuevo" data-o="1">
+  <label class="inline">
+    <select id="wire-type" title="Tipo de cable para las próximas conexiones"></select>
+  </label>
+  <label class="inline" title="Color de los cables nuevos (puedes elegir cualquiera)">Color
+    <input type="color" id="wire-color" class="wire-color">
+  </label>
+  <button class="tool-btn dropper-tb" id="wire-dropper" title="Gotero: coge el color para los cables nuevos de cualquier sitio de la pantalla"></button>
+  <span class="palette tb-recent" id="wire-recent" title="Colores usados recientemente"></span>
+  
+  </div>
+  <div class="tgroup" data-cap="Trazado" data-o="2">
+  
+  <button class="tool-btn on" id="mode-auto" title="Los cables buscan solos un camino en ángulo recto que esquiva los componentes">
+    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M4 18h6V6h10"/><rect x="11" y="10" width="6" height="6" rx="1"/></svg>
+    Automático</button>
+  <button class="tool-btn" id="mode-manual" title="Ángulo recto directo; tú añades puntos de paso arrastrando el cable">
+    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M4 18h8V6h8"/><circle cx="12" cy="12" r="2"/></svg>
+    Manual</button>
+  <button class="tool-btn" id="btn-reroute" title="Aplica el trazado elegido a todos los cables">Re-trazar</button>
+  
+  </div>
+  <div class="tgroup" data-cap="Ver" data-o="4">
+  <label class="inline" title="Mostrar los números de cable (C1, C2…)"><input type="checkbox" id="show-labels" checked> Nº cable</label>
+  <label class="inline" title="Mostrar la cuadrícula del tablero"><input type="checkbox" id="show-grid" checked> Cuadrícula</label>  <label class="inline" title="Vista general pequeña para moverte por el diagrama"><input type="checkbox" id="show-minimap"> Minimapa</label>
+  <button class="tool-btn" id="btn-search" title="Buscar componentes, cables o bornes (Ctrl+F)"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="11" cy="11" r="7"/><path d="m20 20-3.5-3.5"/></svg></button>
+  <label class="inline" title="Imán a cuadrícula: desactívalo para colocar empalmes e imágenes al píxel. También puedes mantener Alt mientras arrastras."><input type="checkbox" id="snap-grid" checked> Imán</label>
+  
+  </div>
+  <div class="tgroup" data-cap="Insertar" data-o="3">
+  <button class="tool-btn" id="btn-image" title="Insertar una foto o captura en el plano (también puedes pegarla con Ctrl+V o arrastrar el archivo)">
+    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="4" width="18" height="16" rx="2"/><circle cx="9" cy="10" r="2"/><path d="m21 16-5-5-9 9"/></svg>
+    Imagen</button>
+  <input type="file" id="image-file" accept="image/*" multiple hidden>
+  <button class="tool-btn" id="btn-note" title="Añadir un texto o nota (T)"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M4 7V5h16v2M9 19h6M12 5v14"/></svg>Texto</button>
+  <button class="tool-btn" id="btn-zone" title="Añadir una zona (recuadro con título). Si tienes algo seleccionado, lo rodea"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="5" width="18" height="15" rx="2" stroke-dasharray="3 3"/><path d="M6 2v3M3 9h4"/></svg>Zona</button>
+  <button class="tool-btn" id="btn-arrow" title="Añadir una flecha para señalar algo (A)"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M5 19 19 5M9 5h10v10"/></svg>Flecha</button>
+  <button class="tool-btn" id="btn-tb" title="Cajetín del plano: proyecto, autor, fecha, revisión"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="12" width="18" height="9" rx="1"/><path d="M3 16h18M12 16v5"/></svg>Cajetín</button>
+  <button class="tool-btn" id="btn-layers" title="Panel de capas: orden, mostrar/ocultar y bloquear">
+    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="m12 3 9 5-9 5-9-5z"/><path d="m3 13 9 5 9-5"/></svg>
+    Capas</button>
+  
+  </div>
+  <div class="tgroup" data-cap="Edición" data-o="5">
+  <button class="tool-btn" data-util="split" title="Partir cable (J): clic en un cable para meter un empalme en ese punto y sacar una derivación"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M2 12h7M15 12h7"/><circle cx="12" cy="12" r="3"/><path d="M12 15v6"/></svg>Partir</button>
+  <button class="tool-btn" id="btn-series" title="Duplicar en serie: varias copias de la selección en fila o en columna (filas de relés, bornas…)"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="2" y="7" width="5" height="10" rx="1"/><rect x="9.5" y="7" width="5" height="10" rx="1"/><rect x="17" y="7" width="5" height="10" rx="1" stroke-dasharray="2 2"/></svg>En serie</button>
+  <button class="tool-btn" id="btn-replace" title="Reemplazar componente: cambia la pieza elegida por otra de la biblioteca y reconecta los cables por el nombre del borne"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="3" width="8" height="8" rx="1"/><rect x="13" y="13" width="8" height="8" rx="1"/><path d="M15 3h3a3 3 0 0 1 3 3v3M18 6l3 3 3-3M9 21H6a3 3 0 0 1-3-3v-3M6 18l-3-3-3 3"/></svg>Reemplazar</button>
+  <button class="tool-btn" id="btn-same" title="Seleccionar iguales: todas las piezas del mismo modelo o todos los cables del mismo tipo que lo elegido"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="3" width="7" height="7" rx="1"/><rect x="14" y="3" width="7" height="7" rx="1"/><rect x="3" y="14" width="7" height="7" rx="1"/><rect x="14" y="14" width="7" height="7" rx="1" stroke-dasharray="2 2"/></svg>Iguales</button>
+  <button class="tool-btn" id="btn-findrep" title="Buscar y reemplazar texto en nombres de piezas, etiquetas de cables y textos"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="10" cy="10" r="6"/><path d="m20 20-5.5-5.5M7 10h6"/></svg>Reemplazar texto</button>
+  <button class="tool-btn" data-util="net" title="Resaltar red (N): clic en un cable o un borne para ver todo lo que está al mismo potencial"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="5" cy="12" r="2"/><circle cx="19" cy="5" r="2"/><circle cx="19" cy="19" r="2"/><path d="M7 12h5M12 5v14M12 5h5M12 19h5"/></svg>Red</button>
+  </div>
+  <button class="tool-btn tb-hide" id="tg-tools2" title="Ocultar herramientas (Alt+2)">▴</button>
+</div>
+
+<div class="workspace">
+  <aside class="sidebar">
+    <div class="sidebar-head">
+      <div class="panel-title"><h2>Componentes</h2><button class="panel-x" data-hide="left" title="Ocultar (Alt+1)">«</button></div>
+      <input class="search" id="lib-search" type="search" placeholder="Buscar…">
+    </div>
+    <div class="sidebar-scroll" id="library"></div>
+    <div class="sidebar-foot">
+      <a class="btn btn-sm" href="/componentes?nuevo=1" target="_blank" style="width:100%">＋ Crear componente con foto</a>
+      <button class="btn btn-sm" id="lib-reload" style="width:100%;margin-top:6px">↻ Recargar biblioteca</button>
+    </div>
+  </aside>
+
+  <section class="canvas-wrap" id="canvas-wrap">
+    <div id="paper"></div>
+    <div class="sel-bar" id="sel-bar" role="toolbar" aria-label="Acciones de la selección" hidden></div>
+    <div class="zoom-float" title="Zoom (también con la rueda del ratón)">
+  <button class="tool-btn" id="zoom-out" title="Alejar">−</button>
+  <span class="zoom-label" id="zoom-label">100%</span>
+  <button class="tool-btn" id="zoom-in" title="Acercar">+</button>
+  <button class="tool-btn" id="zoom-fit" title="Ver todo el diagrama">Ajustar</button>
+    </div>
+    <button class="edge-tab left" id="edge-left" title="Mostrar componentes (Alt+1)">› Componentes</button>
+    <button class="edge-tab right" id="edge-right" title="Mostrar propiedades (Alt+3)">Propiedades ‹</button>
+    <button class="edge-tab top" id="edge-tools" title="Mostrar herramientas (Alt+2)">▾ Herramientas</button>
+    <button class="focus-exit" id="focus-exit" title="Salir del modo enfoque (F)"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M4 9V4h5M20 9V4h-5M4 15v5h5M20 15v5h-5"/></svg> Salir del modo enfoque</button>
+    <div class="canvas-hint">Arrastra el fondo: seleccionar varios · Espacio o botón central + arrastrar: mover plano · Rueda: zoom · Ctrl+V: pegar · clic derecho: menú · Ctrl+F: buscar</div>
+    <div class="layers" id="layers" hidden>
+      <header><b>Capas</b><span class="sp"></span>
+        <button class="btn btn-sm" id="lay-new" title="Crear una capa nueva (pasa a ser la activa)">＋ Nueva capa</button>
+        <button class="lb" id="lay-close" title="Cerrar">✕</button></header>
+      <div class="lay-opts">
+        <label><input type="checkbox" id="lay-j"> Empalmes</label>
+        <label title="Los cables y empalmes se dibujan siempre por encima de las imágenes"><input type="checkbox" id="lay-wires" checked> Cables encima</label>
+      </div>
+      <ul id="lay-list"></ul>
+      <p class="lay-help">La capa <b>activa</b> (resaltada) recibe lo nuevo que dibujes: clic en su nombre para activarla, doble clic para renombrarla.
+        Arrastra un elemento sobre otra capa para moverlo. Arriba = al frente. El ojo muestra u oculta, el candado bloquea, ⬚ selecciona todo, ▲▼ cambian el orden y ✕ borra la capa.</p>
+    </div>
+    <div class="search-box" id="search-box" hidden>
+      <div class="sb-head"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="11" cy="11" r="7"/><path d="m20 20-3.5-3.5"/></svg><input id="search-q" type="search" placeholder="Buscar componente, cable (C12) o borne…" autocomplete="off">
+        <button class="lb" id="search-close" title="Cerrar (Esc)">✕</button></div>
+      <ul id="search-res"></ul>
+    </div>
+    <canvas class="minimap" id="minimap" width="220" height="140" hidden title="Clic o arrastra para moverte por el diagrama"></canvas>
+    <div class="mode-banner" id="mode-banner" hidden>
+      <b>Marcando bornes:</b> haz clic sobre la imagen en cada tornillo o punto de conexión.
+      <button class="btn btn-sm" id="mode-done">Terminar (Esc)</button>
+    </div>
+    <div class="mode-banner util-banner" id="util-banner" role="status" hidden>
+      <span id="util-text"></span>
+      <button class="btn btn-sm" id="util-done">Terminar (Esc)</button>
+    </div>
+  </section>
+
+  <aside class="sidebar right">
+    <div class="sidebar-head"><div class="panel-title"><h2>Propiedades</h2><button class="panel-x" data-hide="right" title="Ocultar (Alt+3)">»</button></div></div>
+    <div class="sidebar-scroll" id="props"></div>
+  </aside>
+</div>
+
+<div class="modal-back" id="modal-conns">
+  <div class="modal">
+    <header>
+      <div class="tabs">
+        <button class="tab" data-tab="conns">Conexiones</button>
+        <button class="tab" data-tab="bom">Lista de materiales</button>
+        <button class="tab" data-tab="review">Revisión</button>
+      </div>
+      <span class="sp"></span>
+      <button class="btn btn-sm" id="conns-renum" title="Deja la numeración seguida: C1, C2, C3…">Renumerar cables</button>
+      <button class="btn btn-sm" id="conns-csv">Descargar CSV</button>
+      <button class="btn btn-sm" id="conns-close">Cerrar</button>
+    </header>
+    <div class="modal-body" id="conns-body"></div>
+  </div>
+</div>
+
+<div class="modal-back" id="modal-tool">
+  <div class="modal modal-sm" role="dialog" aria-modal="true" aria-labelledby="tool-title">
+    <header><h2 id="tool-title"></h2><button class="btn btn-sm" id="tool-close">Cerrar</button></header>
+    <div class="modal-body" id="tool-body"></div>
+  </div>
+</div>
+
+<div class="modal-back" id="modal-keys">
+  <div class="modal">
+    <header><h2>Atajos de teclado</h2><button class="btn btn-sm" id="keys-close">Cerrar</button></header>
+    <div class="modal-body keys"><div class="kcol"><h4>Dibujar</h4><table><tr><td><kbd>V</kbd></td><td>Herramienta seleccionar</td></tr><tr><td><kbd>H</kbd></td><td>Herramienta mano (mover el plano)</td></tr><tr><td><kbd>N</kbd></td><td>Resaltar red (mismo potencial)</td></tr><tr><td><kbd>J</kbd></td><td>Partir cable con un empalme</td></tr><tr><td><kbd>I</kbd></td><td>Seleccionar iguales</td></tr><tr><td><kbd>T</kbd></td><td>Añadir texto</td></tr><tr><td><kbd>A</kbd></td><td>Añadir flecha</td></tr><tr><td><kbd>R</kbd></td><td>Girar 90°</td></tr><tr><td><kbd>Espacio + arrastrar</kbd></td><td>Mover el plano</td></tr><tr><td><kbd>Rueda</kbd></td><td>Zoom</td></tr><tr><td><kbd>Alt + arrastrar</kbd></td><td>Mover sin imán</td></tr></table></div><div class="kcol"><h4>Editar</h4><table><tr><td><kbd>Ctrl+C / X / V</kbd></td><td>Copiar / cortar / pegar</td></tr><tr><td><kbd>Ctrl+D</kbd></td><td>Duplicar</td></tr><tr><td><kbd>Supr</kbd></td><td>Eliminar</td></tr><tr><td><kbd>Ctrl+Z / Ctrl+Y</kbd></td><td>Deshacer / rehacer</td></tr><tr><td><kbd>Ctrl+A</kbd></td><td>Seleccionar todo</td></tr><tr><td><kbd>Flechas</kbd></td><td>Mover lo seleccionado (Mayús: más)</td></tr><tr><td><kbd>Ctrl+↑ / ↓</kbd></td><td>Subir / bajar capa (Mayús: frente / fondo)</td></tr><tr><td><kbd>Esc</kbd></td><td>Deseleccionar</td></tr></table></div><div class="kcol"><h4>Ver y archivo</h4><table><tr><td><kbd>Ctrl+F</kbd></td><td>Buscar</td></tr><tr><td><kbd>F</kbd></td><td>Modo enfoque</td></tr><tr><td><kbd>Alt+1 / 2 / 3</kbd></td><td>Ocultar componentes / herramientas / propiedades</td></tr><tr><td><kbd>Ctrl+S</kbd></td><td>Guardar</td></tr><tr><td><kbd>?</kbd></td><td>Esta ayuda</td></tr><tr><td><kbd>Clic derecho</kbd></td><td>Menú con más acciones</td></tr><tr><td><kbd>Doble clic en cable</kbd></td><td>Añadir empalme</td></tr></table></div></div>
+  </div>
+</div>
+
+<ul class="ctx-menu" id="ctx-menu" hidden></ul>
+
+<script src="/static/vendor/joint.min.js"></script>
+<script src="/static/js/common.js"></script>
+<script src="/static/js/shapes.js"></script>
+<script src="/static/js/ejemplos.js"></script>
+<script src="/static/js/fichas.js"></script>
+<script src="/static/js/editor.js"></script>
+<script src="/static/js/responsive.js"></script>
+<script src="/static/js/ui.js"></script>
+</body>
+</html>

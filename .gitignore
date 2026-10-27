@@ -1,0 +1,24 @@
+# Datos: diagramas y copias de seguridad (cada instalación tiene los suyos)
+data/
+*.db
+
+# Python
+__pycache__/
+*.pyc
+.venv/
+
+# Versión de escritorio: entorno de construcción y paquetes (.exe, .deb → Releases de GitHub)
+build/
+dist/
+
+# Programas de terceros (se descargan aparte, ver README «Programas de bin/»)
+bin/arduino-cli
+bin/arduino-cli.exe
+bin/qemu-esp32/*
+!bin/qemu-esp32/LEEME.txt
+bin/qemu-esp32-linux/*
+!bin/qemu-esp32-linux/LEEME.txt
+
+# Equipos de un tablero propio (tools/placas.py los genera aparte si existen sus dibujos)
+componentes_tablero.json
+ejemplo.json

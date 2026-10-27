@@ -1,0 +1,15 @@
+Emulador del ESP32 para el simulador
+====================================
+
+libqemu-xtensa.dll (ESP32), libqemu-riscv32.dll (ESP32-C3) y la carpeta fw/ (ROM) vienen de PICSimLab 0.9.3
+(https://github.com/lcgamboa/picsimlab, versión Windows de 64 bits). Es el QEMU de
+Espressif modificado por Luis Claudio Gambôa Lopes para exponer los pines, el ADC,
+la UART y el I2C a un programa externo.
+
+Licencia: GNU GPL v2 (QEMU y PICSimLab). Código fuente de esta biblioteca:
+https://github.com/lcgamboa/qemu/tree/picsimlab-esp32
+
+Las demás DLL (glib, gcrypt, gpg-error, intl, iconv, pcre2, winpthread, zlib, libgcc)
+son sus dependencias de MSYS2, con sus propias licencias libres (LGPL, BSD, zlib…).
+
+esp32_runner.py la carga en un proceso aparte por cada simulación.

@@ -1,0 +1,12 @@
+data/
+__pycache__/
+*.pyc
+.git
+.venv
+# binarios de Windows (en la imagen se instala arduino-cli para Linux)
+bin/arduino-cli.exe
+bin/qemu-esp32/*.dll
+tools/__pycache__/
+# versión de escritorio: entorno de construcción y paquetes (.exe, .deb)
+build/
+dist/

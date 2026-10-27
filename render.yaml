@@ -1,0 +1,17 @@
+# Despliegue en Render (https://render.com) con disco persistente para la base de datos.
+services:
+  - type: web
+    name: diagramas-electricos
+    runtime: docker
+    plan: starter
+    disk:
+      name: datos
+      mountPath: /data
+      sizeGB: 1
+    envVars:
+      - key: DATABASE_PATH
+        value: /data/diagramas.db
+      - key: APP_USER
+        sync: false
+      - key: APP_PASSWORD
+        sync: false
