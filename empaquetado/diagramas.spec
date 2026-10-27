@@ -26,10 +26,12 @@ datas = [
 ]
 if WIN:
     datas.append((J('build', 'python-embed'), 'python-runner'))   # lo descarga construir_windows.bat
-# opcionales: equipos de un tablero propio y el diagrama que se carga en una base nueva
-for extra in ('componentes_tablero.json', 'ejemplo.json'):
-    if os.path.exists(J(extra)):
-        datas.append((J(extra), '.'))
+# Solo para uso propio (INCLUIR_PRIVADO=1): los equipos de un tablero propio y el diagrama que se carga
+# en una base nueva. Por defecto no van, para que un paquete publicado no los lleve.
+if os.environ.get('INCLUIR_PRIVADO') == '1':
+    for extra in ('componentes_tablero.json', 'ejemplo.json'):
+        if os.path.exists(J(extra)):
+            datas.append((J(extra), '.'))
 
 a = Analysis(
     [J('escritorio.py')],

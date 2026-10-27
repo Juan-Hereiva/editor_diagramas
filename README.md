@@ -77,6 +77,9 @@ empaquetado\construir_windows.bat
 docker run --rm -v "$PWD:/src" -w /src python:3.12-slim-bullseye sh empaquetado/construir_deb.sh
 ```
 
+Los paquetes solo llevan la biblioteca pública. Para una versión propia que incluya también
+`componentes_tablero.json` y `ejemplo.json` (si los tienes), construye con `INCLUIR_PRIVADO=1`.
+
 ## Cómo se dibuja
 
 | Acción | Cómo |
