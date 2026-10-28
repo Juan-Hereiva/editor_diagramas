@@ -7,7 +7,7 @@
 # El paquete instala el programa en /opt/diagramas-electricos, el comando diagramas-electricos y su
 # entrada en el menú de aplicaciones. Los diagramas van a ~/.local/share/diagramas-electricos.
 set -eu
-VERSION="${VERSION:-1.0.0}"
+VERSION="${VERSION:-1.1.0}"
 CLI_VERSION=1.5.1
 B=build/linux
 

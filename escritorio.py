@@ -23,9 +23,8 @@ import webbrowser
 PORT = 47215            # fijo: el navegador guarda el tema y el portapapeles de la app por puerto
 IDLE_EXIT = 180         # s sin noticias de ninguna ventana (una pestaña en segundo plano avisa cada minuto)
 FIRST_WAIT = 300        # s de margen si la ventana tarda en abrir la primera vez
-OTHERS_WAIT = 90        # Linux: s que sigue el servidor tras cerrar su ventana, por si otra instancia lo usa
 TITLE = "Diagramas eléctricos"
-OPEN_EXTRA = {"fn": None}   # abre otra ventana de la app en este proceso (solo con pywebview)
+OPEN_EXTRA = {"fn": None}   # abre otra ventana de la app en este proceso (pywebview o ventana_gtk)
 ES = {      # textos de pywebview (diálogo de guardar descargas, confirmaciones)
     "global.quitConfirmation": "¿Seguro que quieres salir?", "global.ok": "Aceptar", "global.quit": "Salir",
     "global.cancel": "Cancelar", "global.saveFile": "Guardar archivo",
@@ -128,8 +127,22 @@ def gtk_window(url, home):
     if not py or not os.path.exists(script):
         return False
     icon = os.path.join(here, "static", "icons", "icon-192.png")
-    r = subprocess.run([py, script, url, os.path.join(home, "app"), icon, TITLE], env=system_env())
-    return r.returncode == 0       # 3: faltan GTK/WebKit → navegador
+    procs = []
+
+    def spawn():
+        procs.append(subprocess.Popen([py, script, url, os.path.join(home, "app"), icon, TITLE], env=system_env()))
+
+    spawn()
+    try:
+        if procs[0].wait(timeout=8) == 3:      # faltan GTK/WebKit → navegador
+            return False
+    except subprocess.TimeoutExpired:
+        pass
+    OPEN_EXTRA["fn"] = spawn                   # el programa abierto otra vez: otra ventana de este proceso
+    while any(p.poll() is None for p in procs):
+        time.sleep(0.5)
+    OPEN_EXTRA["fn"] = None
+    return True
 
 
 def show(url, home):
@@ -200,18 +213,14 @@ def main():
     server = make_server("127.0.0.1", port, web.app, threaded=True)
     threading.Thread(target=server.serve_forever, daemon=True).start()
     print("Diagramas electricos -> %s (datos en %s)" % (url, home))
-    own = show(url, home)           # con ventana propia, vuelve cuando se cierra
-    if own and os.name == "nt":     # pywebview: todas las ventanas eran de este proceso
+    if show(url, home):             # ventana propia: vuelve al cerrarse la última (todas son de este proceso)
         server.shutdown()
         return
 
-    start = time.time()
+    start = time.time()             # en el navegador: hasta que ninguna pestaña avise
     while True:
         now = time.time()
-        if own:                     # su ventana ya se cerró: sigue solo si otra instancia aún lo usa
-            if now - max(beat["last"], start) > OTHERS_WAIT:
-                break
-        elif beat["last"] and now - beat["last"] > IDLE_EXIT:
+        if beat["last"] and now - beat["last"] > IDLE_EXIT:
             break
         elif not beat["last"] and now - start > FIRST_WAIT:
             break

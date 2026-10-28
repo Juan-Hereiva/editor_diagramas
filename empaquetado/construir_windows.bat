@@ -6,7 +6,7 @@ rem Necesita Python 3.12 y, para el instalador, Inno Setup 6 (ISCC.exe) o Docker
 chcp 65001 >nul
 setlocal
 cd /d "%~dp0.."
-set VERSION=1.0.0
+set VERSION=1.1.0
 
 if not exist build\venv-win\Scripts\python.exe (
   python -m venv build\venv-win || exit /b 1

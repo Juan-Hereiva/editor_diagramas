@@ -59,8 +59,8 @@ tareas, y al cerrar la última ventana el programa termina. Lleva dentro arduino
 
 | | Windows 10/11 (64 bits) | Linux (Ubuntu, Debian, Mint… 64 bits) |
 |---|---|---|
-| Archivo | `dist/DiagramasElectricos-1.0.0-instalador.exe` | `dist/diagramas-electricos_1.0.0_amd64.deb` |
-| Instalar | Doble clic. No pide administrador: va a `%LOCALAPPDATA%\Programs` | `sudo apt install ./diagramas-electricos_1.0.0_amd64.deb` |
+| Archivo | `dist/DiagramasElectricos-1.1.0-instalador.exe` | `dist/diagramas-electricos_1.1.0_amd64.deb` |
+| Instalar | Doble clic. No pide administrador: va a `%LOCALAPPDATA%\Programs` | `sudo apt install ./diagramas-electricos_1.1.0_amd64.deb` |
 | Abrir | Menú Inicio o escritorio: **Diagramas eléctricos** | Menú de aplicaciones o el comando `diagramas-electricos` |
 | Datos | `%LOCALAPPDATA%\DiagramasElectricos\diagramas.db` | `~/.local/share/diagramas-electricos/diagramas.db` |
 
