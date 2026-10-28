@@ -11,7 +11,8 @@ set VERSION=1.0.0
 if not exist build\venv-win\Scripts\python.exe (
   python -m venv build\venv-win || exit /b 1
 )
-build\venv-win\Scripts\python -m pip install -q -r requirements.txt pyinstaller || exit /b 1
+rem pywebview fijado: escritorio.py cambia su manejo de ventanas nuevas (on_new_window_request)
+build\venv-win\Scripts\python -m pip install -q -r requirements.txt pyinstaller pywebview==6.2.1 || exit /b 1
 
 rem Python "embeddable" oficial: ejecuta el simulador del ESP32 (ver runner_python() en simulador.py)
 if not exist build\python-embed\python.exe (

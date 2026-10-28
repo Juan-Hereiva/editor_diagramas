@@ -24,6 +24,8 @@ datas = [
     # el runner del ESP32 se ejecuta con un Python normal (ver runner_python() en simulador.py)
     (J('esp32_runner.py'), '.'),
 ]
+if not WIN:
+    datas.append((J('ventana_gtk.py'), '.'))      # ventana de Linux, con el python3 del sistema
 if WIN:
     datas.append((J('build', 'python-embed'), 'python-runner'))   # lo descarga construir_windows.bat
 # Solo para uso propio (INCLUIR_PRIVADO=1): los equipos de un tablero propio y el diagrama que se carga

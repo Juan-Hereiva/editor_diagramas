@@ -48,8 +48,14 @@ archivo o usar el botón **Exportar respaldo**.
 
 ## Versión de escritorio (instalador .exe y paquete .deb)
 
-Programa instalable que no necesita Python: se abre en su propia ventana (Edge, Chrome o Chromium en
-modo aplicación) y se cierra solo cuando cierras sus ventanas. Lleva dentro arduino-cli y el QEMU del ESP32.
+Aplicación de escritorio que no necesita Python ni navegador: ventana propia con su icono en la barra de
+tareas, y al cerrar la última ventana el programa termina. Lleva dentro arduino-cli y el QEMU del ESP32.
+
+- **Windows:** la ventana es [pywebview](https://pywebview.flowrl.com) con WebView2, el motor que ya trae
+  Windows 10/11. Si se abre el programa otra vez, aparece otra ventana del mismo proceso.
+- **Linux:** la ventana es GTK con WebKitGTK (`ventana_gtk.py`). WebKitGTK no ejecuta el Python de la
+  Orange Pi / Raspberry Pi (le falta JSPI): para esas placas, abre `http://127.0.0.1:47215` en Chromium o Chrome.
+- Si la ventana propia no se puede abrir, la app se abre en Edge/Chrome/Chromium en modo aplicación.
 
 | | Windows 10/11 (64 bits) | Linux (Ubuntu, Debian, Mint… 64 bits) |
 |---|---|---|

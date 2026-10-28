@@ -47,13 +47,16 @@ EOF
 
 # python3 + python3-serial: esptool del núcleo ESP32 y el runner de QEMU (simulador.py, runner_python)
 # libgcrypt20, libfdt1, libglib2.0-0: las pide el QEMU del ESP32 (bin/qemu-esp32)
+# python3-gi + GTK 3 + WebKitGTK: la ventana propia (ventana_gtk.py)
+# Recommends Chromium/Chrome: el simulador de Orange Pi / Raspberry Pi (Python) necesita JSPI, que
+# WebKitGTK no tiene; esas placas se pueden abrir en el navegador
 cat > "$R/DEBIAN/control" <<EOF
 Package: diagramas-electricos
 Version: $VERSION
 Section: electronics
 Priority: optional
 Architecture: amd64
-Depends: libc6 (>= 2.31), python3, python3-serial, libgcrypt20, libfdt1, libglib2.0-0, xdg-utils
+Depends: libc6 (>= 2.31), python3, python3-serial, libgcrypt20, libfdt1, libglib2.0-0, xdg-utils, python3-gi, gir1.2-gtk-3.0, gir1.2-webkit2-4.1 | gir1.2-webkit2-4.0
 Recommends: chromium | chromium-browser | google-chrome-stable | microsoft-edge-stable
 Installed-Size: $(du -sk "$R/opt" | cut -f1)
 Maintainer: Diagramas electricos <diagramas@localhost>

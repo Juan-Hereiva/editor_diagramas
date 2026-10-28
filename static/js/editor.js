@@ -2905,8 +2905,14 @@
     if (!out) { toast('El diagrama está vacío'); return; }
     try {
       const url = await svgToDataURL(out.svg, out.w, out.h, 2, 'image/png');
-      const w = window.open('', '_blank');
-      if (!w) { toast('El navegador bloqueó la ventana: permite ventanas emergentes', 'error'); return; }
+      // marco oculto en vez de ventana emergente: lo bloquean algunos navegadores y la versión de
+      // escritorio (pywebview) no abre ventanas en blanco
+      const fr = document.createElement('iframe');
+      fr.setAttribute('aria-hidden', 'true');
+      fr.style.cssText = 'position:fixed;right:0;bottom:0;width:0;height:0;border:0;visibility:hidden';
+      document.body.appendChild(fr);
+      const w = fr.contentWindow;
+      w.onafterprint = () => setTimeout(() => fr.remove(), 100);
       const name = esc($('diagram-name').value || 'Diagrama');
       w.document.write('<!doctype html><html><head><meta charset="utf-8"><title>' + name + '</title><style>@page{size:' +
         (out.w > out.h ? 'landscape' : 'portrait') + ';margin:10mm}body{margin:0;font:14px system-ui}h1{font-size:16px;margin:0 0 8px}' +
